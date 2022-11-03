@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 
 import usersFromServer from './api/users';
@@ -9,6 +9,14 @@ export const App: React.FC = () => {
   const visibleUsers = [...usersFromServer];
   const visibleProducts = [...productsFromServer];
   const visibleCategories = [...categoriesFromServer];
+  const [selectedUser, setSelectedUser] = useState('');
+  const [query, setQuery] = useState('');
+  const filtered = visibleProducts.filter((product) => product
+    .name.toLowerCase().includes(query.toLowerCase()));
+
+  // const [visibleUsers, setVisibleUsers] = useState(usersFromServer);
+  // const [visibleProducts, setVisibleProducts] = useState(productsFromServer);
+  // const [visibleCategories, setVisibleCategories] = useState(categoriesFromServer);
 
   return (
     <div className="section">
@@ -20,21 +28,37 @@ export const App: React.FC = () => {
             <p className="panel-heading">Filters</p>
 
             <p className="panel-tabs has-text-weight-bold">
-              <a data-cy="FilterAllUsers" href="#/">
+              <a
+                data-cy="FilterAllUsers"
+                href="#/"
+                className={selectedUser === 'a' ? 'is-active' : ''}
+                onClick={() => {
+                  setSelectedUser('a');
+                  // visibleProducts.find((prod) =>
+                  //   visibleCategories
+                  //     .find((cat) => prod.categoryId === cat.id)
+                  //     .find((ca) =>
+                  //       visibleUsers.find((us) => ca.userId === us.id)
+                  //     )
+                  // );
+                }}
+              >
                 All
               </a>
 
-              <a data-cy="FilterUser" href="#/">
-                User 1
-              </a>
-
-              <a data-cy="FilterUser" href="#/" className="is-active">
-                User 2
-              </a>
-
-              <a data-cy="FilterUser" href="#/">
-                User 3
-              </a>
+              {visibleUsers.map((user) => (
+                <a
+                  data-cy="FilterUser"
+                  href="#/"
+                  className={selectedUser === user.name ? 'is-active' : ''}
+                  key={user.id}
+                  onClick={() => {
+                    setSelectedUser(user.name);
+                  }}
+                >
+                  {user.name}
+                </a>
+              ))}
             </p>
 
             <div className="panel-block">
@@ -44,7 +68,8 @@ export const App: React.FC = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
                 />
 
                 <span className="icon is-left">
@@ -165,9 +190,13 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              {visibleProducts.map((product) => {
+              {filtered.map((product) => {
                 const findCategory = visibleCategories.find(
                   (cat) => product.categoryId === cat.id,
+                );
+
+                const findUser = visibleUsers.find(
+                  (user) => user.id === findCategory?.ownerId,
                 );
 
                 return (
@@ -183,12 +212,15 @@ export const App: React.FC = () => {
                       {findCategory?.title}
                     </td>
 
-                    <td data-cy="ProductUser" className="has-text-link">
-                      {
-                        visibleUsers.find(
-                          (user) => user.id === findCategory?.ownerId,
-                        )?.name
+                    <td
+                      data-cy="ProductUser"
+                      className={
+                        findUser?.sex === 'm'
+                          ? 'has-text-link'
+                          : 'has-text-danger'
                       }
+                    >
+                      {findUser?.name}
                     </td>
                   </tr>
                 );
