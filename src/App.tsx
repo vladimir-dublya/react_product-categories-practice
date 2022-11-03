@@ -14,6 +14,8 @@ export const App: React.FC = () => {
   const filtered = visibleProducts.filter((product) => product
     .name.toLowerCase().includes(query.toLowerCase()));
 
+  const filteredUsers = visibleUsers.filter((user) => user.name.includes(selectedUser));
+
   // const [visibleUsers, setVisibleUsers] = useState(usersFromServer);
   // const [visibleProducts, setVisibleProducts] = useState(productsFromServer);
   // const [visibleCategories, setVisibleCategories] = useState(categoriesFromServer);
@@ -31,16 +33,9 @@ export const App: React.FC = () => {
               <a
                 data-cy="FilterAllUsers"
                 href="#/"
-                className={selectedUser === 'a' ? 'is-active' : ''}
+                className={selectedUser === '' ? 'is-active' : ''}
                 onClick={() => {
-                  setSelectedUser('a');
-                  // visibleProducts.find((prod) =>
-                  //   visibleCategories
-                  //     .find((cat) => prod.categoryId === cat.id)
-                  //     .find((ca) =>
-                  //       visibleUsers.find((us) => ca.userId === us.id)
-                  //     )
-                  // );
+                  setSelectedUser('');
                 }}
               >
                 All
@@ -78,11 +73,16 @@ export const App: React.FC = () => {
 
                 <span className="icon is-right">
                   {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    data-cy="ClearButton"
-                    type="button"
-                    className="delete"
-                  />
+                  {query
+                    && (
+                      // eslint-disable-next-line jsx-a11y/control-has-associated-label
+                      <button
+                        data-cy="ClearButton"
+                        type="button"
+                        className="delete"
+                        onClick={() => setQuery('')}
+                      />
+                    )}
                 </span>
               </p>
             </div>
@@ -195,11 +195,11 @@ export const App: React.FC = () => {
                   (cat) => product.categoryId === cat.id,
                 );
 
-                const findUser = visibleUsers.find(
+                const findUser = filteredUsers.find(
                   (user) => user.id === findCategory?.ownerId,
                 );
 
-                return (
+                return findUser && (
                   <tr data-cy="Product">
                     <td className="has-text-weight-bold" data-cy="ProductId">
                       {product.id}
