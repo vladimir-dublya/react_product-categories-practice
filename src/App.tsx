@@ -1,11 +1,15 @@
 import React from 'react';
 import './App.scss';
 
-// import usersFromServer from './api/users';
-// import productsFromServer from './api/products';
-// import categoriesFromServer from './api/categories';
+import usersFromServer from './api/users';
+import productsFromServer from './api/products';
+import categoriesFromServer from './api/categories';
 
 export const App: React.FC = () => {
+  const visibleUsers = [...usersFromServer];
+  const visibleProducts = [...productsFromServer];
+  const visibleCategories = [...categoriesFromServer];
+
   return (
     <div className="section">
       <div className="container">
@@ -16,32 +20,19 @@ export const App: React.FC = () => {
             <p className="panel-heading">Filters</p>
 
             <p className="panel-tabs has-text-weight-bold">
-              <a
-                data-cy="FilterAllUsers"
-                href="#/"
-              >
+              <a data-cy="FilterAllUsers" href="#/">
                 All
               </a>
 
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
+              <a data-cy="FilterUser" href="#/">
                 User 1
               </a>
 
-              <a
-                data-cy="FilterUser"
-                href="#/"
-                className="is-active"
-              >
+              <a data-cy="FilterUser" href="#/" className="is-active">
                 User 2
               </a>
 
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
+              <a data-cy="FilterUser" href="#/">
                 User 3
               </a>
             </p>
@@ -88,11 +79,7 @@ export const App: React.FC = () => {
                 Category 1
               </a>
 
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
+              <a data-cy="Category" className="button mr-2 my-1" href="#/">
                 Category 2
               </a>
 
@@ -103,11 +90,7 @@ export const App: React.FC = () => {
               >
                 Category 3
               </a>
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
+              <a data-cy="Category" className="button mr-2 my-1" href="#/">
                 Category 4
               </a>
             </div>
@@ -117,7 +100,6 @@ export const App: React.FC = () => {
                 data-cy="ResetAllButton"
                 href="#/"
                 className="button is-link is-outlined is-fullwidth"
-
               >
                 Reset all filters
               </a>
@@ -139,7 +121,6 @@ export const App: React.FC = () => {
                 <th>
                   <span className="is-flex is-flex-wrap-nowrap">
                     ID
-
                     <a href="#/">
                       <span className="icon">
                         <i data-cy="SortIcon" className="fas fa-sort" />
@@ -151,7 +132,6 @@ export const App: React.FC = () => {
                 <th>
                   <span className="is-flex is-flex-wrap-nowrap">
                     Product
-
                     <a href="#/">
                       <span className="icon">
                         <i data-cy="SortIcon" className="fas fa-sort-down" />
@@ -163,7 +143,6 @@ export const App: React.FC = () => {
                 <th>
                   <span className="is-flex is-flex-wrap-nowrap">
                     Category
-
                     <a href="#/">
                       <span className="icon">
                         <i data-cy="SortIcon" className="fas fa-sort-up" />
@@ -175,7 +154,6 @@ export const App: React.FC = () => {
                 <th>
                   <span className="is-flex is-flex-wrap-nowrap">
                     User
-
                     <a href="#/">
                       <span className="icon">
                         <i data-cy="SortIcon" className="fas fa-sort" />
@@ -187,53 +165,34 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  1
-                </td>
+              {visibleProducts.map((product) => {
+                const findCategory = visibleCategories.find(
+                  (cat) => product.categoryId === cat.id,
+                );
 
-                <td data-cy="ProductName">Milk</td>
-                <td data-cy="ProductCategory">🍺 - Drinks</td>
+                return (
+                  <tr data-cy="Product">
+                    <td className="has-text-weight-bold" data-cy="ProductId">
+                      {product.id}
+                    </td>
 
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Max
-                </td>
-              </tr>
+                    <td data-cy="ProductName">{product.name}</td>
+                    <td data-cy="ProductCategory">
+                      {findCategory?.icon}
+                      {' - '}
+                      {findCategory?.title}
+                    </td>
 
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  2
-                </td>
-
-                <td data-cy="ProductName">Bread</td>
-                <td data-cy="ProductCategory">🍞 - Grocery</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-danger"
-                >
-                  Anna
-                </td>
-              </tr>
-
-              <tr data-cy="Product">
-                <td className="has-text-weight-bold" data-cy="ProductId">
-                  3
-                </td>
-
-                <td data-cy="ProductName">iPhone</td>
-                <td data-cy="ProductCategory">💻 - Electronics</td>
-
-                <td
-                  data-cy="ProductUser"
-                  className="has-text-link"
-                >
-                  Roma
-                </td>
-              </tr>
+                    <td data-cy="ProductUser" className="has-text-link">
+                      {
+                        visibleUsers.find(
+                          (user) => user.id === findCategory?.ownerId,
+                        )?.name
+                      }
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
